@@ -3,7 +3,7 @@ import { ServeStaticModule } from "@nestjs/serve-static"
 
 import { configuration } from "../config/configuration"
 import { HealthModule } from "../endpoints/health/health.module"
-import { TodosModule } from "../endpoints/todos/todos.module"
+import { PathsModule } from "../endpoints/paths/paths.module"
 import { getRootModuleImports } from "../utils/utils"
 
 @Module({
@@ -14,7 +14,7 @@ import { getRootModuleImports } from "../utils/utils"
       exclude: ["/api*"],
     }),
     HealthModule,
-    TodosModule,
+    PathsModule,
   ],
   controllers: [],
   providers: [],

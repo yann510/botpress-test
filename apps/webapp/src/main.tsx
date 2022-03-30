@@ -8,11 +8,26 @@ import { App } from "./app/app"
 import { store } from "./redux/store"
 
 const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#3276ea",
+    },
+    secondary: {
+      main: "#1a1e22",
+    },
+  },
   components: {
     MuiCardContent: {
       styleOverrides: {
         root: {
           paddingTop: 24,
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          fontWeight: "bold",
         },
       },
     },
