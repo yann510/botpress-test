@@ -1,30 +1,40 @@
-import { createSlice } from "@reduxjs/toolkit"
-import { FileWatchEvent } from "@stator/models"
+import { PayloadAction, createSlice } from "@reduxjs/toolkit"
+import { FileWatchEvent, Path, PathDetailed } from "@stator/models"
 
 import { sliceSocketReducerFactory } from "../slice-socket-reducer-factory"
 import { SliceState, getInitialSliceState } from "../slice-state"
 
 export interface FileWatcherState extends SliceState {
-  paths: string[]
+  inputPaths: Path[]
+  watchedPaths: PathDetailed[]
 }
 
 export const fileWatcherSlice = createSlice({
   name: "file-watcher",
   initialState: {
-    paths: [],
+    inputPaths: [],
+    watchedPaths: [],
     ...getInitialSliceState(),
   },
-  reducers: {},
+  reducers: {
+    setInputPaths: (state: FileWatcherState, action: PayloadAction<Path[]>) => {
+      state.inputPaths = action.payload
+    },
+  },
   extraReducers: {
     ...sliceSocketReducerFactory<FileWatcherState>((state, fileWatchEventJson) => {
       const fileWatchEvent: FileWatchEvent = JSON.parse(fileWatchEventJson)
       if ("paths" in fileWatchEvent) {
-        state.paths = fileWatchEvent.paths
+        state.watchedPaths = fileWatchEvent.paths
       } else if (fileWatchEvent.eventName.includes("add")) {
-        state.paths = [...state.paths, fileWatchEvent.path]
+        state.watchedPaths = [...state.watchedPaths, fileWatchEvent.path]
       } else if (fileWatchEvent.eventName.includes("unlink")) {
-        state.paths = state.paths.filter(path => path !== fileWatchEvent.path)
+        state.watchedPaths = state.watchedPaths.filter(path => path !== fileWatchEvent.path)
       }
     }),
   },
 })
+
+export const fileWatcherThunks = {
+  setInputPaths: fileWatcherSlice.actions.setInputPaths,
+}

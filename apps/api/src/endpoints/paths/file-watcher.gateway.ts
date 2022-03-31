@@ -18,7 +18,7 @@ export class FileWatcherGateway {
       const subscription = this.getSubscription(subject, resolve, reject)
 
       this.fsWatcher = chokidar.watch(paths, { ignored: ["**/node_modules/*", "**/.*"] }).on("all", (eventName, path) => {
-        const event: FileWatchEvent = { eventName, path }
+        const event: FileWatchEvent = { eventName, path: { name: path, type: eventName.includes("Dir") ? "directory" : "file" } }
         if (path.includes("node_modules")) return
 
         // When subscription is closed, this means that the initial files have already been streamed as a single message

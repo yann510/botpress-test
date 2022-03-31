@@ -12,12 +12,11 @@ import { Form } from "../components/containers/form"
 import { useFormValidator } from "../hooks/use-form-validator"
 import { useWatchPathsMutation } from "../redux/endpoints/paths-endpoints"
 import { AppDispatch, RootState, isSuccess } from "../redux/store"
-import { FileWatcherState } from "../redux/thunks-slice/file-watcher-thunks-slice"
+import { FileWatcherState, fileWatcherThunks } from "../redux/thunks-slice/file-watcher-thunks-slice"
 import { snackbarThunks } from "../redux/thunks-slice/snackbar-thunks-slice"
 
 export const PathsInputPage = () => {
   const classes = useStyles()
-  const [paths, setPaths] = useState<Path[]>([])
   const [newPath, setNewPath] = useState<Path>(new Path())
   const [isAddingPath, setIsAddingPath] = useState(false)
   const { validateForm, errorsByProperty } = useFormValidator(Path)
@@ -35,7 +34,7 @@ export const PathsInputPage = () => {
   const onNewPathChange = (event: ChangeEvent<HTMLInputElement>) => setNewPath({ name: event.target.value })
 
   const onDeletePathClick = pathToDelete => {
-    setPaths(paths.filter(path => path !== pathToDelete))
+    dispatch(fileWatcherThunks.setInputPaths(fileWatcherState.inputPaths.filter(path => path !== pathToDelete)))
     dispatch(snackbarThunks.display({ message: "Path deleted", severity: "warning" }))
   }
 
@@ -44,14 +43,14 @@ export const PathsInputPage = () => {
       setIsAddingPath(true)
 
       event.preventDefault()
-      const isPathUnique = !paths.some(path => path.name === newPath.name)
+      const isPathUnique = !fileWatcherState.inputPaths.some(path => path.name === newPath.name)
       if (!isPathUnique) {
         return dispatch(snackbarThunks.display({ message: "Path already exists", severity: "error" }))
       }
 
       const isFormValid = await validateForm(newPath)
       if (isFormValid) {
-        setPaths([...paths, newPath])
+        dispatch(fileWatcherThunks.setInputPaths([...fileWatcherState.inputPaths, newPath]))
         setNewPath(new Path())
         dispatch(snackbarThunks.display({ message: "Path added", severity: "success" }))
       }
@@ -63,7 +62,7 @@ export const PathsInputPage = () => {
   }
 
   const onViewFileExplorerClick = async () => {
-    const response = await watchPaths({ paths })
+    const response = await watchPaths({ paths: fileWatcherState.inputPaths })
     if (isSuccess(response)) {
       navigate("/file-explorer")
       dispatch(snackbarThunks.display({ message: "Watching paths", severity: "success" }))
@@ -90,7 +89,7 @@ export const PathsInputPage = () => {
       <Card>
         <CardContent className={classes.cardContent}>
           <List>
-            {paths.map(path => (
+            {fileWatcherState.inputPaths.map(path => (
               <ListItem key={path.name}>
                 <ListItemText primary={path.name} />
                 <ListItemSecondaryAction className={classes.listItemSecondaryAction}>
@@ -107,7 +106,7 @@ export const PathsInputPage = () => {
         color="primary"
         variant="contained"
         loading={isLoadingWatchPaths}
-        disabled={paths.length === 0}
+        disabled={fileWatcherState.inputPaths.length === 0}
         onClick={onViewFileExplorerClick}
       >
         View file explorer

@@ -1,3 +1,4 @@
+import { PathDetailed } from "@stator/models"
 import DirectoryTree from "antd/lib/tree/DirectoryTree"
 import { get, set, trimEnd } from "lodash"
 import RcTree from "rc-tree"
@@ -5,7 +6,7 @@ import React, { useEffect, useMemo, useState } from "react"
 import { useDebounce } from "react-use"
 
 interface Props {
-  paths: string[]
+  paths: PathDetailed[]
   height: number
   onFileSelect: (filePath: string) => void
 }
@@ -22,11 +23,12 @@ const convertPathsToGraph = (paths: Props["paths"]) => {
 
   for (let i = 0; i < paths.length; i++) {
     const path = paths[i]
-    const objectPath = getObjectPath(path)
-    const isFile = path.includes(".")
+    const objectPath = getObjectPath(path.name)
+    const isFile = path.type === "file"
+    console.log(path.type)
 
     if (isFile) {
-      const filename = path.replace(/^.*[\\/]/, "")
+      const filename = path.name.replace(/^.*[\\/]/, "")
       const fileDirectoryObjectPath = trimEnd(objectPath.replace(filename, ""), ".")
       const newFileIndex = (get(nodes, `${fileDirectoryObjectPath}.files`) || []).length
 
@@ -47,7 +49,10 @@ const transformToTreeDataStructure = (nodes, startPath = "") => {
       }
 
       const files = nodes[key]?.files || []
-      const nodeKey = [startPath, key].filter(fragment => !!fragment).join("/").replace("//", "/")
+      const nodeKey = [startPath, key]
+        .filter(fragment => !!fragment)
+        .join("/")
+        .replace("//", "/")
       const children = transformToTreeDataStructure(nodes[key], nodeKey)
 
       return {

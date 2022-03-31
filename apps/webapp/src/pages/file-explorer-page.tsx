@@ -25,19 +25,20 @@ export const FileExplorerPage = () => {
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
-    if (fileWatcherState.paths.length === 0) {
+    if (fileWatcherState.watchedPaths.length === 0) {
       navigateToPathsInputPage()
     }
-  }, [fileWatcherState.paths])
+  }, [fileWatcherState.watchedPaths])
 
   const navigateToPathsInputPage = () => navigate("/")
 
   const onFileSelect = async (filePath: string) => {
-    const response = await apiClient.post<{ fileContent: string }>(`/paths/read-file`, { filePath })
-    if (response.data?.fileContent) {
+    try {
+      const response = await apiClient.post<{ fileContent: string }>(`/paths/read-file`, { filePath })
       setSelectedFileContent(response.data.fileContent)
-    } else {
-      dispatch(snackbarThunks.display({ message: "Unable to read file", severity: "error" }))
+
+    } catch(error) {
+      dispatch(snackbarThunks.display({ message: error.response.data.message, severity: "error" }))
     }
   }
 
@@ -49,7 +50,7 @@ export const FileExplorerPage = () => {
       </div>
       <div className={classes.layout}>
         <div className={classes.fileExplorerTreeContainer}>
-          <FileExplorerTree paths={fileWatcherState.paths} height={fileExplorerTreeHeight} onFileSelect={onFileSelect} />
+          <FileExplorerTree paths={fileWatcherState.watchedPaths} height={fileExplorerTreeHeight} onFileSelect={onFileSelect} />
         </div>
         <div style={{ maxHeight: codeViewerHeight }}>
           <Highlight>{selectedFileContent}</Highlight>

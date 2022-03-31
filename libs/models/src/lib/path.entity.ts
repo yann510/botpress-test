@@ -10,3 +10,7 @@ export class Path {
     this.name = ""
   }
 }
+
+export class PathDetailed extends Path {
+  type: "directory" | "file"
+}

@@ -13,7 +13,17 @@ export class PathsController {
 
   @Post("/read-file")
   async readFile(@Body("filePath") filePath: string) {
+    const stats = await this.getPathStats({ name: filePath })
+    const fileSizeInMegabytes = stats.size / (1024 * 1024)
+    if (fileSizeInMegabytes > 2) {
+      throw new BadRequestException("File is too big and cannot be displayed")
+    }
+
     const fileContent = await fs.promises.readFile(filePath, { encoding: "utf-8" })
+    const hasTooManyCharacters = fileContent.length > 10_000
+    if (hasTooManyCharacters) {
+      throw new BadRequestException("File has over 10,000 characters and won't be displayed for performance reasons")
+    }
 
     return { fileContent }
   }
@@ -21,13 +31,17 @@ export class PathsController {
   @Post("/watch")
   async watch(@Body() body: { paths: Path[] }) {
     for await (const path of body.paths) {
-      try {
-        await fs.promises.stat(path.name)
-      } catch (_) {
-        throw new BadRequestException(`The provided path does not exist: ${path.name}`)
-      }
+      await this.getPathStats(path)
     }
 
     await this.fileWatcherGateway.watch(body.paths.map(path => path.name))
+  }
+
+  private async getPathStats(path: Path) {
+    try {
+      return await fs.promises.stat(path.name)
+    } catch (_) {
+      throw new BadRequestException(`The provided path does not exist: ${path.name}`)
+    }
   }
 }
