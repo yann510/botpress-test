@@ -79,8 +79,8 @@ library you want
 - Only tested on a linux machine, should work fine with other OS too
 - There are few extra files that were not required by this project, the relevant paths are `apps/webapp` and `apps/api`
 - I'm using 2 different design system library (I prefer `mui`) and started with that, but the tree view wasn't performant enough so I ended up integrating `ant` only for the tree view
-- Files over 2MB won't be displayed
-- Files with a lot of lines won't be displayed because highlightJS has not merged its [performance PR](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82806) yet
+- Files with over 10,000 characters won't be displayed because highlightJS has not merged its [performance PR](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82806) yet
+- Long paths will be trimmed in the file explorer
 
 ## Solution Diagram
 

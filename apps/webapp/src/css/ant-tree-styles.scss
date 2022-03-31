@@ -47,6 +47,7 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  white-space: nowrap;
 }
 .ant-tree.ant-tree-directory .ant-tree-treenode .ant-tree-node-content-wrapper:hover {
   background: transparent;

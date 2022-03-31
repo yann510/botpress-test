@@ -3,6 +3,7 @@ import { FileWatchEvent, Path, PathDetailed } from "@stator/models"
 
 import { sliceSocketReducerFactory } from "../slice-socket-reducer-factory"
 import { SliceState, getInitialSliceState } from "../slice-state"
+import {orderBy} from "lodash";
 
 export interface FileWatcherState extends SliceState {
   inputPaths: Path[]
@@ -29,8 +30,10 @@ export const fileWatcherSlice = createSlice({
       } else if (fileWatchEvent.eventName.includes("add")) {
         state.watchedPaths = [...state.watchedPaths, fileWatchEvent.path]
       } else if (fileWatchEvent.eventName.includes("unlink")) {
-        state.watchedPaths = state.watchedPaths.filter(path => path !== fileWatchEvent.path)
+        state.watchedPaths = state.watchedPaths.filter(path => path.name !== fileWatchEvent.path.name)
       }
+
+      state.watchedPaths = orderBy(state.watchedPaths, path => path.name)
     }),
   },
 })

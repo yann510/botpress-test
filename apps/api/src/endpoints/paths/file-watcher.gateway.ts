@@ -68,9 +68,7 @@ export class FileWatcherGateway {
   private getInitialEvent(initialEvents: Set<FileWatchEvent>): FileWatchEvent {
     return {
       eventName: "initial",
-      paths: Array.from(initialEvents)
-        .map(event => event.path)
-        .sort(),
+      paths: Array.from(initialEvents).map(event => event.path),
     }
   }
 

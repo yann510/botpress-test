@@ -12,14 +12,7 @@ export class PathsController {
   constructor(private fileWatcherGateway: FileWatcherGateway) {}
 
   @Post("/read-file")
-  async readFile(@Body("filePath") filePath: string) {
-    const stats = await this.getPathStats({ name: filePath })
-    const fileSizeInMegabytes = stats.size / (1024 * 1024)
-    if (fileSizeInMegabytes > 2) {
-      throw new BadRequestException("File is too big and cannot be displayed")
-    }
-
-    const fileContent = await fs.promises.readFile(filePath, { encoding: "utf-8" })
+  async readFile(@Body("filePath") filePath: string) {const fileContent = await fs.promises.readFile(filePath, { encoding: "utf-8" })
     const hasTooManyCharacters = fileContent.length > 10_000
     if (hasTooManyCharacters) {
       throw new BadRequestException("File has over 10,000 characters and won't be displayed for performance reasons")
