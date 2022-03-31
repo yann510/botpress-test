@@ -4,7 +4,7 @@
  */
 
 // file-watch-event.entity.ts
-export * from "./lib/file-watch-event.entity"
+export * from "./lib/file-watch-messages.entity"
 
 // path.entity.ts
 export * from "./lib/path.entity"

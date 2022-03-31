@@ -1,7 +1,4 @@
-import { connect, send } from "@giantmachines/redux-websocket/dist"
-import { Theme } from "@mui/material"
-import { makeStyles } from "@mui/styles"
-import clsx from "clsx"
+import { connect } from "@giantmachines/redux-websocket/dist"
 import React, { useEffect } from "react"
 import { useDispatch } from "react-redux"
 import { Route, Routes } from "react-router-dom"
@@ -13,7 +10,6 @@ import { PathsInputPage } from "../pages/paths-input-page"
 import { AppDispatch } from "../redux/store"
 
 export const App = () => {
-  const classes = useStyles()
   const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
@@ -30,14 +26,3 @@ export const App = () => {
     </>
   )
 }
-
-const useStyles = makeStyles((theme: Theme) => ({
-  container: {
-    fontFamily: "sans-serif",
-    minWidth: 300,
-    maxWidth: 600,
-    margin: "50px auto",
-    display: "grid",
-    gridGap: theme.spacing(2),
-  },
-}))

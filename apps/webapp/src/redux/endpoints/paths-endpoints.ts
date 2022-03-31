@@ -1,6 +1,7 @@
 import { Path } from "@stator/models"
 
 import { statorApi as api } from "../stator-api"
+
 const injectedRtkApi = api.injectEndpoints({
   endpoints: build => ({
     watchPaths: build.mutation<string[], { paths: Path[] }>({

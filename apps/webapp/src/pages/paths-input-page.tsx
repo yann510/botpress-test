@@ -15,9 +15,7 @@ import { AppDispatch, RootState, isSuccess } from "../redux/store"
 import { FileWatcherState } from "../redux/thunks-slice/file-watcher-thunks-slice"
 import { snackbarThunks } from "../redux/thunks-slice/snackbar-thunks-slice"
 
-interface Props {}
-
-export const PathsInputPage: React.FC<Props> = props => {
+export const PathsInputPage = () => {
   const classes = useStyles()
   const [paths, setPaths] = useState<Path[]>([{ name: "/home/yann510/Pictures/" }, { name: "/home/yann510/yann510/rvest" }])
   const [newPath, setNewPath] = useState<Path>(new Path())
@@ -80,6 +78,7 @@ export const PathsInputPage: React.FC<Props> = props => {
             <TextField
               id="add-path-field"
               label="Path name"
+              placeholder="Full path name, e.g: /home/user/projects/git-repo"
               value={newPath.name}
               onChange={onNewPathChange}
               error={!!errorsByProperty["name"]}

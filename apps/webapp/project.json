@@ -13,7 +13,7 @@
         "polyfills": "apps/webapp/src/polyfills.ts",
         "tsConfig": "apps/webapp/tsconfig.app.json",
         "assets": ["apps/webapp/src/favicon.ico", "apps/webapp/src/assets"],
-        "styles": ["apps/webapp/src/styles.scss"],
+        "styles": ["apps/webapp/src/css/styles.scss", "apps/webapp/src/css/ant-tree-styles.scss"],
         "scripts": [],
         "webpackConfig": "@nrwl/react/plugins/webpack",
         "showCircularDependencies": false,
