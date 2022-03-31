@@ -108,6 +108,7 @@
     "react-router-dom": "6.2.1",
     "react-use": "^17.3.2",
     "redoc": "2.0.0-rc.44",
+    "reflect-metadata": "^0.1.13",
     "rxjs": "7.5.1",
     "tslib": "2.0.0",
     "typeorm": "0.2.28",

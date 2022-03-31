@@ -10,7 +10,7 @@ export class PathsController {
   constructor(private fileWatcherGateway: FileWatcherGateway) {}
 
   @Post("/watch")
-  watch(@Body() body: { paths: Path[] }) {
-    this.fileWatcherGateway.watch(body.paths.map(path => path.name))
+  async watch(@Body() body: { paths: Path[] }) {
+    await this.fileWatcherGateway.watch(body.paths.map(path => path.name))
   }
 }

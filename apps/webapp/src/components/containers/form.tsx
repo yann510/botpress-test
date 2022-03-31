@@ -1,9 +1,10 @@
+import { LoadingButton } from "@mui/lab"
+import { Theme, Typography } from "@mui/material"
+import { ButtonPropsColorOverrides } from "@mui/material/Button/Button"
+import { makeStyles } from "@mui/styles"
+import { OverridableStringUnion } from "@mui/types"
 import clsx from "clsx"
 import React, { SyntheticEvent } from "react"
-import { LoadingButton } from "@mui/lab";
-import { Theme, Typography } from "@mui/material";
-import { makeStyles } from "@mui/styles";
-
 
 interface Props {
   onSubmit: (event: SyntheticEvent<unknown>) => void
@@ -12,6 +13,7 @@ interface Props {
   title?: string
   className?: string
   buttonClassName?: string
+  buttonColor?: OverridableStringUnion<"inherit" | "primary" | "secondary" | "success" | "error" | "info" | "warning", ButtonPropsColorOverrides>
 }
 
 export const Form: React.FC<Props> = props => {
@@ -28,7 +30,7 @@ export const Form: React.FC<Props> = props => {
       <LoadingButton
         className={props.buttonClassName}
         loading={props.isSubmitting}
-        color="primary"
+        color={props.buttonColor || "primary"}
         onClick={props.onSubmit}
         variant="contained"
         type="submit"

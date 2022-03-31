@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit"
+import { FileWatchEvent, FileWatchEventInitialResponse } from "@stator/models"
 
-import { FileWatchEvent } from "../../../../../libs/models/src/lib/file-watch-event.entity"
 import { sliceSocketReducerFactory } from "../slice-socket-reducer-factory"
 import { SliceState, getInitialSliceState } from "../slice-state"
 
@@ -17,8 +17,10 @@ export const fileWatcherSlice = createSlice({
   reducers: {},
   extraReducers: {
     ...sliceSocketReducerFactory<FileWatcherState>((state, fileWatchEventJson) => {
-      const fileWatchEvent: FileWatchEvent = JSON.parse(fileWatchEventJson)
-      if (fileWatchEvent.eventName.includes("add")) {
+      const fileWatchEvent: FileWatchEvent | FileWatchEventInitialResponse = JSON.parse(fileWatchEventJson)
+      if ("paths" in fileWatchEvent) {
+        state.paths = fileWatchEvent.paths
+      } else if (fileWatchEvent.eventName.includes("add")) {
         state.paths = [...state.paths, fileWatchEvent.path]
       } else if (fileWatchEvent.eventName.includes("unlink")) {
         state.paths = state.paths.filter(path => path !== fileWatchEvent.path)

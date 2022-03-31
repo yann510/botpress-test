@@ -1,18 +1,13 @@
-import "antd/dist/antd.css"
+import "../../ant-tree-styles.scss"
 
 import { Folder, InsertDriveFile } from "@mui/icons-material"
-import ChevronRightIcon from "@mui/icons-material/ChevronRight"
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore"
-import { TreeItem, TreeView } from "@mui/lab"
-import { Button, Theme } from "@mui/material"
+import { Theme } from "@mui/material"
 import { makeStyles } from "@mui/styles"
-import { Tree } from "antd"
 import DirectoryTree from "antd/lib/tree/DirectoryTree"
-import { clone, get, set, trimEnd } from "lodash"
+import { get, set, trimEnd } from "lodash"
 import RcTree from "rc-tree"
 import React, { useEffect, useMemo, useState } from "react"
-import { NodeRendererProps } from "react-arborist/dist/types"
-import { useDebounce } from "react-use"
+import {useDebounce, useWindowSize} from "react-use"
 import { v4 as uuidv4 } from "uuid"
 
 interface Node {
@@ -23,6 +18,7 @@ interface Node {
 
 interface Props {
   paths: string[]
+  height: number
 }
 
 function getObjectPath(path: string) {
@@ -62,62 +58,68 @@ function getObjectPath(path: string) {
 const convertPathsToNodes = (paths: Props["paths"]): Node => {
   const nodes: any = {}
 
-  for (const path of paths) {
+  for (let i = 0; i < paths.length; i++) {
+    const path = paths[i]
     // Only supports basic UNIX paths
 
     const objectPath = getObjectPath(path)
-
+    const key = `${i}-${path}`
     const isFile = path.includes(".")
+
     if (isFile) {
       const filename = path.replace(/^.*[\\/]/, "")
       const fileDirectoryObjectPath = trimEnd(objectPath.replace(filename, ""), ".")
       const newFileIndex = (get(nodes, `${fileDirectoryObjectPath}.files`) || []).length
 
-      set(nodes, `${fileDirectoryObjectPath}.files[${newFileIndex}]`, {filename)
+      set(nodes, `${fileDirectoryObjectPath}.files[${newFileIndex}]`, { filename, key })
     } else {
-      set(nodes, objectPath, {})
+      set(nodes, objectPath, { key })
     }
   }
 
   return nodes
 }
 
-export const FileFolderTree: React.FC<Props> = props => {
+export const FileExplorerTree: React.FC<Props> = props => {
   const classes = useStyles()
   const [nodes, setNodes] = useState({})
   const [lastScrollPosition, setLastScrollPosition] = useState(0)
   const [expandedKeys, setExpandedKeys] = useState([])
   const keyIds = []
   const treeRef = React.useRef<RcTree>()
+  const keyCounters = {}
 
-  const transformInTree = nodes => {
+  const transformInTree = (nodes, startPath = "") => {
     return Object.keys(nodes)
       .map((key, i) => {
-        if (key === "files") {
+        if (key === "files" || key === "key") {
           return null
         }
 
         const files = nodes[key]?.files || []
         const keyId = uuidv4()
         keyIds.push(keyId)
+        keyCounters[nodes.path] = keyCounters[nodes.path] ? keyCounters[nodes.path] + 1 : 0
+        console.log(nodes[key]?.key || nodes.key || key)
 
         return {
-          key: keyId,
+          key: `${startPath}/${key}`,
           title: key,
           children:
             files.length > 0
-              ? [...transformInTree(nodes[key]), ...files.map(file => ({ key: uuidv4(), title: file, isLeaf: true }))]
-              : transformInTree(nodes[key]),
+              ? [...transformInTree(nodes[key], `${startPath}/${key}`), ...files.map(file => ({ key: `${startPath}/${file.key}`, title: file.filename, isLeaf: true }))]
+              : transformInTree(nodes[key], `${startPath}/${key}`),
         }
       })
       .filter(node => !!node)
   }
 
   const treeData = useMemo(() => transformInTree(nodes), [nodes])
+  console.log(nodes, treeData)
   useEffect(
     function setScrollPositionOnRerender() {
       if (treeData && treeRef?.current) {
-        treeRef.current.scrollTo({ key: null, offset: lastScrollPosition + 500, align: "bottom" })
+        treeRef.current.scrollTo({ key: null, offset: lastScrollPosition + props.height, align: "bottom" })
       }
     },
     [treeData]
@@ -130,6 +132,7 @@ export const FileFolderTree: React.FC<Props> = props => {
     200,
     [props.paths]
   )
+  console.log(expandedKeys)
 
   return (
     <>
@@ -140,13 +143,13 @@ export const FileFolderTree: React.FC<Props> = props => {
               <DirectoryTree
                 ref={treeRef}
                 treeData={treeData}
-                height={500}
+                height={props.height}
                 defaultExpandAll
                 defaultExpandParent
                 itemHeight={28}
                 expandedKeys={expandedKeys}
                 onScroll={() => {
-                  const listElement: any = document.getElementsByClassName("ant-tree-list-holder-inner")[0]
+                  const listElement = document.getElementsByClassName("ant-tree-list-holder-inner")[0] as HTMLElement
                   const offset = +listElement.style?.transform?.split?.("(")?.[1]?.split?.("p")?.[0]
 
                   setLastScrollPosition(offset)
@@ -158,7 +161,7 @@ export const FileFolderTree: React.FC<Props> = props => {
               />
             </>
           ) : null,
-        [treeData, isReady, expandedKeys]
+        [treeData, isReady, expandedKeys, props.height]
       )}
     </>
   )

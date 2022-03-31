@@ -3,8 +3,12 @@
  * You can disable the automatic generation by removing the prepare section of the workspace.json file under api section
  */
 
-// root.entity.ts
-export * from "./lib/root.entity"
+// file-watch-event.entity.ts
+export * from "./lib/file-watch-event.entity"
 
 // path.entity.ts
 export * from "./lib/path.entity"
+
+// root.entity.ts
+export * from "./lib/root.entity"
+

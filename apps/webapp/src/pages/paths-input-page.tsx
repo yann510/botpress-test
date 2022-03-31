@@ -14,13 +14,12 @@ import { useWatchPathsMutation } from "../redux/endpoints/paths-endpoints"
 import { AppDispatch, RootState, isSuccess } from "../redux/store"
 import { FileWatcherState } from "../redux/thunks-slice/file-watcher-thunks-slice"
 import { snackbarThunks } from "../redux/thunks-slice/snackbar-thunks-slice"
-import {FileFolderTree} from "../components/display/file-folder-tree";
 
 interface Props {}
 
 export const PathsInputPage: React.FC<Props> = props => {
   const classes = useStyles()
-  const [paths, setPaths] = useState<Path[]>([{name: "/home/yann510/Pictures/"}, {name: "/home/yann510/yann510/rvest"}])
+  const [paths, setPaths] = useState<Path[]>([{ name: "/home/yann510/Pictures/" }, { name: "/home/yann510/yann510/rvest" }])
   const [newPath, setNewPath] = useState<Path>(new Path())
   const [isAddingPath, setIsAddingPath] = useState(false)
   const { validateForm, errorsByProperty } = useFormValidator(Path)
@@ -74,10 +73,10 @@ export const PathsInputPage: React.FC<Props> = props => {
   }
 
   return (
-    <>
+    <div className={classes.page}>
       <Card>
         <CardContent className={classes.container}>
-          <Form loadingButtonText="Add path" onSubmit={onSubmit} isSubmitting={isAddingPath}>
+          <Form loadingButtonText="Add path" buttonColor="secondary" onSubmit={onSubmit} isSubmitting={isAddingPath}>
             <TextField
               id="add-path-field"
               label="Path name"
@@ -106,7 +105,7 @@ export const PathsInputPage: React.FC<Props> = props => {
         </CardContent>
       </Card>
       <LoadingButton
-        color="secondary"
+        color="primary"
         variant="contained"
         loading={isLoadingWatchPaths}
         disabled={paths.length === 0}
@@ -114,12 +113,18 @@ export const PathsInputPage: React.FC<Props> = props => {
       >
         View file explorer
       </LoadingButton>
-      <FileFolderTree paths={fileWatcherState.paths} />
-    </>
+    </div>
   )
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
+  page: {
+    minWidth: 300,
+    maxWidth: 600,
+    margin: "50px auto",
+    display: "grid",
+    gridGap: theme.spacing(2),
+  },
   container: {
     display: "grid",
     gridTemplateColumns: "1fr",

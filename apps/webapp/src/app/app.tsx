@@ -4,9 +4,11 @@ import { makeStyles } from "@mui/styles"
 import clsx from "clsx"
 import React, { useEffect } from "react"
 import { useDispatch } from "react-redux"
+import { Route, Routes } from "react-router-dom"
 
 import { SnackbarListener } from "../components/global/snackbar-listener/snackbar-listener"
 import { environment } from "../environments/environment"
+import { FileExplorerPage } from "../pages/file-explorer-page"
 import { PathsInputPage } from "../pages/paths-input-page"
 import { AppDispatch } from "../redux/store"
 
@@ -19,21 +21,22 @@ export const App = () => {
   }, [])
 
   return (
-    <div className={clsx(classes.app, classes.cardContainer)}>
+    <>
       <SnackbarListener />
-      <PathsInputPage />
-    </div>
+      <Routes>
+        <Route path="/file-explorer" element={<FileExplorerPage />} />
+        <Route path="*" element={<PathsInputPage />} />
+      </Routes>
+    </>
   )
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  app: {
+  container: {
     fontFamily: "sans-serif",
     minWidth: 300,
     maxWidth: 600,
     margin: "50px auto",
-  },
-  cardContainer: {
     display: "grid",
     gridGap: theme.spacing(2),
   },
