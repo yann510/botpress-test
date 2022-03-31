@@ -17,7 +17,7 @@ import { snackbarThunks } from "../redux/thunks-slice/snackbar-thunks-slice"
 
 export const PathsInputPage = () => {
   const classes = useStyles()
-  const [paths, setPaths] = useState<Path[]>([{ name: "/home/yann510/Pictures/" }, { name: "/home/yann510/yann510/rvest" }])
+  const [paths, setPaths] = useState<Path[]>([])
   const [newPath, setNewPath] = useState<Path>(new Path())
   const [isAddingPath, setIsAddingPath] = useState(false)
   const { validateForm, errorsByProperty } = useFormValidator(Path)

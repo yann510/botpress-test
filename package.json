@@ -46,7 +46,8 @@
     "workspace-generator": "nx workspace-generator",
     "generate-api-redux": "node node_modules/@rtk-query/codegen-openapi/lib/bin/cli.js apps/cli/src/open-api-config.ts && node cli/main.js generate-cache-key-file",
     "cli": "node cli/main.js",
-    "stator-cli": "node cli/main.js"
+    "stator-cli": "node cli/main.js",
+    "apps": "nx run-many --target serve --projects=webapp,api"
   },
   "husky": {
     "hooks": {

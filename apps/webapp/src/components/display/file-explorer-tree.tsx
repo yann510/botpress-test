@@ -97,8 +97,6 @@ export const FileExplorerTree: React.FC<Props> = props => {
                 ref={treeRef}
                 treeData={treeData}
                 height={props.height}
-                defaultExpandAll
-                defaultExpandParent
                 itemHeight={28}
                 expandedKeys={expandedKeys}
                 onScroll={() => {
