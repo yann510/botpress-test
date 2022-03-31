@@ -7,6 +7,7 @@ import { useDebounce } from "react-use"
 interface Props {
   paths: string[]
   height: number
+  onFileSelect: (filePath: string) => void
 }
 
 const getObjectPath = (path: string) => {
@@ -46,14 +47,15 @@ const transformToTreeDataStructure = (nodes, startPath = "") => {
       }
 
       const files = nodes[key]?.files || []
-      const children = transformToTreeDataStructure(nodes[key], `${startPath}/${key}`)
+      const nodeKey = [startPath, key].filter(fragment => !!fragment).join("/").replace("//", "/")
+      const children = transformToTreeDataStructure(nodes[key], nodeKey)
 
       return {
-        key: `${startPath}/${key}`,
+        key: nodeKey,
         title: key,
         children:
           files.length > 0
-            ? [...children, ...files.map(fileName => ({ key: `${startPath}/${fileName}`, title: fileName, isLeaf: true }))]
+            ? [...children, ...files.map(fileName => ({ key: `${nodeKey}/${fileName}`, title: fileName, isLeaf: true }))]
             : children,
       }
     })
@@ -107,6 +109,11 @@ export const FileExplorerTree: React.FC<Props> = props => {
                 }}
                 onExpand={expandedKeys => {
                   setExpandedKeys(expandedKeys)
+                }}
+                onSelect={(_, info) => {
+                  if (info.node.isLeaf) {
+                    props.onFileSelect(info.node.key.toString())
+                  }
                 }}
               />
             </>

@@ -1,22 +1,28 @@
 import CloseIcon from "@mui/icons-material/Close"
 import { Theme, Typography } from "@mui/material"
 import { makeStyles } from "@mui/styles"
-import React, { useEffect } from "react"
-import { useSelector } from "react-redux"
+import React, { useEffect, useState } from "react"
+import Highlight from "react-highlight"
+import { useDispatch, useSelector } from "react-redux"
 import { useNavigate } from "react-router-dom"
 import { useWindowSize } from "react-use"
 
+import { apiClient } from "../clients/api-client"
 import { FileExplorerTree } from "../components/display/file-explorer-tree"
-import { RootState } from "../redux/store"
+import { AppDispatch, RootState } from "../redux/store"
 import { FileWatcherState } from "../redux/thunks-slice/file-watcher-thunks-slice"
+import { snackbarThunks } from "../redux/thunks-slice/snackbar-thunks-slice"
 
 export const FileExplorerPage = () => {
   const classes = useStyles()
   const fileWatcherState = useSelector<RootState, FileWatcherState>(state => state.fileWatcherReducer)
+  const [selectedFileContent, setSelectedFileContent] = useState(null)
   const navigate = useNavigate()
   const { height: windowHeight } = useWindowSize()
   const titleBarHeight = 40
   const fileExplorerTreeHeight = windowHeight - titleBarHeight
+  const codeViewerHeight = fileExplorerTreeHeight - 25
+  const dispatch = useDispatch<AppDispatch>()
 
   useEffect(() => {
     if (fileWatcherState.paths.length === 0) {
@@ -26,6 +32,15 @@ export const FileExplorerPage = () => {
 
   const navigateToPathsInputPage = () => navigate("/")
 
+  const onFileSelect = async (filePath: string) => {
+    const response = await apiClient.post<{ fileContent: string }>(`/paths/read-file`, { filePath })
+    if (response.data?.fileContent) {
+      setSelectedFileContent(response.data.fileContent)
+    } else {
+      dispatch(snackbarThunks.display({ message: "Unable to read file", severity: "error" }))
+    }
+  }
+
   return (
     <>
       <div className={classes.explorerTitleContainer}>
@@ -34,7 +49,10 @@ export const FileExplorerPage = () => {
       </div>
       <div className={classes.layout}>
         <div className={classes.fileExplorerTreeContainer}>
-          <FileExplorerTree paths={fileWatcherState.paths} height={fileExplorerTreeHeight} />
+          <FileExplorerTree paths={fileWatcherState.paths} height={fileExplorerTreeHeight} onFileSelect={onFileSelect} />
+        </div>
+        <div style={{ maxHeight: codeViewerHeight }}>
+          <Highlight>{selectedFileContent}</Highlight>
         </div>
       </div>
     </>
@@ -44,7 +62,7 @@ export const FileExplorerPage = () => {
 const useStyles = makeStyles((theme: Theme) => ({
   layout: {
     display: "grid",
-    gridTemplateColumns: "600px 1fr",
+    gridTemplateColumns: "500px 1fr",
     height: "100%",
   },
   fileExplorerTreeContainer: {

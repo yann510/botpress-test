@@ -2,12 +2,12 @@ import { Path } from "@stator/models"
 
 import { statorApi as api } from "../stator-api"
 
-const injectedRtkApi = api.injectEndpoints({
+export const pathApi = api.injectEndpoints({
   endpoints: build => ({
-    watchPaths: build.mutation<string[], { paths: Path[] }>({
-      query: body => ({ url: `/api/paths/watch`, method: "POST", body: body }),
+    watchPaths: build.mutation<null, { paths: Path[] }>({
+      query: body => ({ url: `/paths/watch`, method: "POST", body }),
     }),
   }),
   overrideExisting: false,
 })
-export const { useWatchPathsMutation } = injectedRtkApi
+export const { useWatchPathsMutation } = pathApi

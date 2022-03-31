@@ -5,7 +5,7 @@ import { environment } from "../environments/environment"
 export const apiTagTypes = { todo: "todo" }
 
 export const statorApi = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: environment.apiUrl.replace("/api", "") }),
+  baseQuery: fetchBaseQuery({ baseUrl: environment.apiUrl }),
   tagTypes: Object.values(apiTagTypes),
   endpoints: () => ({}),
 })

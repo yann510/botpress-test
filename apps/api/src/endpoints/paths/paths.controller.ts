@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import { BadRequestException, Body, Controller, Post } from "@nestjs/common"
+import { BadRequestException, Body, Controller, Get, Param, Post } from "@nestjs/common"
 import { ApiTags } from "@nestjs/swagger"
 import { Path } from "@stator/models"
 
@@ -10,6 +10,13 @@ import { FileWatcherGateway } from "./file-watcher.gateway"
 @Controller("paths")
 export class PathsController {
   constructor(private fileWatcherGateway: FileWatcherGateway) {}
+
+  @Post("/read-file")
+  async readFile(@Body("filePath") filePath: string) {
+    const fileContent = await fs.promises.readFile(filePath, { encoding: "utf-8" })
+
+    return { fileContent }
+  }
 
   @Post("/watch")
   async watch(@Body() body: { paths: Path[] }) {
