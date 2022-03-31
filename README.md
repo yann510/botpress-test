@@ -7,12 +7,6 @@
 </br>
 
 <div align="center">
-  <a href="https://badge.fury.io/gh/yann510%2Fbotpress-test">
-    <img src="https://badge.fury.io/gh/yann510%2Fbotpress-test.svg" alt="GitHub version" />
-  </a>
-  <a href="https://github.com/yann510/botpress-test/actions">
-    <img src="https://github.com/yann510/botpress-test/workflows/botpress-test%20CI/badge.svg" alt="Github action status" />
-  </a>
   <a href="http://commitizen.github.io/cz-cli/">
     <img src="https://img.shields.io/badge/commitizen-friendly-ff69b4.svg" alt="Commitizen friendly" />
   </a>
