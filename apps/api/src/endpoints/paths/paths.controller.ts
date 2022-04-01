@@ -1,6 +1,6 @@
 import fs from "fs"
 
-import { BadRequestException, Body, Controller, Get, Param, Post } from "@nestjs/common"
+import { BadRequestException, Body, Controller, Post } from "@nestjs/common"
 import { ApiTags } from "@nestjs/swagger"
 import { Path } from "@stator/models"
 
@@ -13,9 +13,9 @@ export class PathsController {
 
   @Post("/read-file")
   async readFile(@Body("filePath") filePath: string) {const fileContent = await fs.promises.readFile(filePath, { encoding: "utf-8" })
-    const hasTooManyCharacters = fileContent.length > 10_000
+    const hasTooManyCharacters = fileContent.length > 20_000
     if (hasTooManyCharacters) {
-      throw new BadRequestException("File has over 10,000 characters and won't be displayed for performance reasons")
+      throw new BadRequestException("File has over 20,000 characters and won't be displayed for performance reasons")
     }
 
     return { fileContent }
