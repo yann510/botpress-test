@@ -68,7 +68,7 @@ library you want
 - In the webapp, you need to input paths in the following format: e.g: /home/user/projects/git-repo
 - Relative paths won't work
 - node_modules and hidden files won't be displayed in the file explorer
-- I decided not to use the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) as it is not supported by all major browsers
+- I decided not to use the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) as it is not supported by all major browsers + doesn't provide full file path for security reasons
 - I'm using websockets to enable real time streaming of file events
 - Only tested on a linux machine, should work fine with other OS too
 - There are few extra files that were not required by this project, the relevant paths are `apps/webapp` and `apps/api`

@@ -1,4 +1,5 @@
-import { PathDetailed } from "@stator/models"
+import { Path, PathDetailed } from "@stator/models"
+import { Key } from "antd/es/table/interface"
 import DirectoryTree from "antd/lib/tree/DirectoryTree"
 import { get, set, trimEnd } from "lodash"
 import RcTree from "rc-tree"
@@ -7,12 +8,14 @@ import { useDebounce } from "react-use"
 
 interface Props {
   paths: PathDetailed[]
+  expandedPaths: Path[]
   height: number
   onFileSelect: (filePath: string) => void
 }
 
 const getObjectPath = (path: string) => {
-  const objectPath = trimEnd(path, "/").replace(/\//g, ".")
+  const windowsPathSupport = path.replace(/\\/g, "/")
+  const objectPath = trimEnd(windowsPathSupport, "/").replace(/\//g, ".")
 
   return objectPath[0] === "." ? `/.${objectPath.slice(1, objectPath.length)}` : objectPath
 }
@@ -25,7 +28,6 @@ const convertPathsToGraph = (paths: Props["paths"]) => {
     const path = paths[i]
     const objectPath = getObjectPath(path.name)
     const isFile = path.type === "file"
-    console.log(path.type)
 
     if (isFile) {
       const filename = path.name.replace(/^.*[\\/]/, "")
@@ -41,7 +43,7 @@ const convertPathsToGraph = (paths: Props["paths"]) => {
   return nodes
 }
 
-const transformToTreeDataStructure = (nodes, startPath = "") => {
+const transformGraphToTreeDataStructure = (nodes, startPath = "") => {
   return Object.keys(nodes)
     .map(key => {
       if (key === "files") {
@@ -53,7 +55,7 @@ const transformToTreeDataStructure = (nodes, startPath = "") => {
         .filter(fragment => !!fragment)
         .join("/")
         .replace("//", "/")
-      const children = transformToTreeDataStructure(nodes[key], nodeKey)
+      const children = transformGraphToTreeDataStructure(nodes[key], nodeKey)
 
       return {
         key: nodeKey,
@@ -70,9 +72,9 @@ const transformToTreeDataStructure = (nodes, startPath = "") => {
 export const FileExplorerTree: React.FC<Props> = props => {
   const [nodes, setNodes] = useState({})
   const [lastScrollPosition, setLastScrollPosition] = useState(0)
-  const [expandedKeys, setExpandedKeys] = useState([])
+  const [expandedKeys, setExpandedKeys] = useState<Key[]>(props.expandedPaths.map(path => trimEnd(path.name, "/")) || [])
   const treeRef = React.useRef<RcTree>()
-  const treeData = useMemo(() => transformToTreeDataStructure(nodes), [nodes])
+  const treeData = useMemo(() => transformGraphToTreeDataStructure(nodes), [nodes])
 
   useEffect(
     function setScrollPositionOnRerender() {
@@ -88,7 +90,7 @@ export const FileExplorerTree: React.FC<Props> = props => {
     () => {
       setNodes(convertPathsToGraph(props.paths))
     },
-    200,
+    100,
     [props.paths]
   )
 
@@ -97,29 +99,27 @@ export const FileExplorerTree: React.FC<Props> = props => {
       {useMemo(
         () =>
           isRenderReady() ? (
-            <>
-              <DirectoryTree
-                ref={treeRef}
-                treeData={treeData}
-                height={props.height}
-                itemHeight={28}
-                expandedKeys={expandedKeys}
-                onScroll={() => {
-                  const listElement = document.getElementsByClassName("ant-tree-list-holder-inner")[0] as HTMLElement
-                  const offset = +listElement.style?.transform?.split?.("(")?.[1]?.split?.("p")?.[0]
+            <DirectoryTree
+              ref={treeRef}
+              treeData={treeData}
+              height={props.height}
+              itemHeight={28}
+              expandedKeys={expandedKeys}
+              onScroll={() => {
+                const listElement = document.getElementsByClassName("ant-tree-list-holder-inner")[0] as HTMLElement
+                const offset = +listElement.style?.transform?.split?.("(")?.[1]?.split?.("p")?.[0]
 
-                  setLastScrollPosition(offset)
-                }}
-                onExpand={expandedKeys => {
-                  setExpandedKeys(expandedKeys)
-                }}
-                onSelect={(_, info) => {
-                  if (info.node.isLeaf) {
-                    props.onFileSelect(info.node.key.toString())
-                  }
-                }}
-              />
-            </>
+                setLastScrollPosition(offset)
+              }}
+              onExpand={expandedKeys => {
+                setExpandedKeys(expandedKeys)
+              }}
+              onSelect={(_, info) => {
+                if (info.node.isLeaf) {
+                  props.onFileSelect(info.node.key.toString())
+                }
+              }}
+            />
           ) : null,
         [treeData, isRenderReady, expandedKeys, props.height]
       )}

@@ -36,8 +36,7 @@ export const FileExplorerPage = () => {
     try {
       const response = await apiClient.post<{ fileContent: string }>(`/paths/read-file`, { filePath })
       setSelectedFileContent(response.data.fileContent)
-
-    } catch(error) {
+    } catch (error) {
       dispatch(snackbarThunks.display({ message: error.response.data.message, severity: "error" }))
     }
   }
@@ -50,7 +49,12 @@ export const FileExplorerPage = () => {
       </div>
       <div className={classes.layout}>
         <div className={classes.fileExplorerTreeContainer}>
-          <FileExplorerTree paths={fileWatcherState.watchedPaths} height={fileExplorerTreeHeight} onFileSelect={onFileSelect} />
+          <FileExplorerTree
+            paths={fileWatcherState.watchedPaths}
+            expandedPaths={fileWatcherState.inputPaths}
+            height={fileExplorerTreeHeight}
+            onFileSelect={onFileSelect}
+          />
         </div>
         <div style={{ maxHeight: codeViewerHeight }}>
           <Highlight>{selectedFileContent}</Highlight>
