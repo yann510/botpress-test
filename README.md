@@ -37,6 +37,8 @@
 
 ## 🚀 Quick Start
 
+Please note that you need to use node version `14`.
+
 ```
 npm run apps
 ```
