@@ -17,25 +17,31 @@ export class FileWatcherGateway {
       const subject = new Subject<FileWatchEvent>()
       const subscription = this.getSubscription(subject, resolve, reject)
 
-      this.fsWatcher = chokidar.watch(paths, { ignored: ["**/node_modules/*", "**/.*"] }).on("all", (eventName, path) => {
-        const event: FileWatchEvent = { eventName, path: { name: path, type: eventName.includes("Dir") ? "directory" : "file" } }
-        if (path.includes("node_modules")) return
+      this.fsWatcher = chokidar
+        .watch(paths, { ignored: ["**/node_modules/*", "**/.*"] })
+        .on("error", async error => {
+          await this.resetFileWatcher()
+          reject(error)
+        })
+        .on("all", (eventName, path) => {
+          const event: FileWatchEvent = { eventName, path: { name: path, type: eventName.includes("Dir") ? "directory" : "file" } }
+          if (path.includes("node_modules")) return
 
-        // When subscription is closed, this means that the initial files have already been streamed as a single message
-        // for performance reasons, and we now stream individual updates
-        if (subscription.closed) {
-          for (const client of this.clients) {
-            client.send(JSON.stringify(event))
+          // When subscription is closed, this means that the initial files have already been streamed as a single message
+          // for performance reasons, and we now stream individual updates
+          if (subscription.closed) {
+            for (const client of this.clients) {
+              client.send(JSON.stringify(event))
+            }
+          } else {
+            subject.next(event)
           }
-        } else {
-          subject.next(event)
-        }
-      })
+        })
     })
   }
 
   @SubscribeMessage("changes")
-  onSubscribeClosestTradingStocks(@ConnectedSocket() client: Socket) {
+  onChangesSubscribe(@ConnectedSocket() client: Socket) {
     this.clients.push(client)
   }
 
