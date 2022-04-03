@@ -10,6 +10,8 @@ export interface FileWatcherState extends SliceState {
   watchedPaths: PathDetailed[]
 }
 
+const applyWindowsSupport = (path: PathDetailed) => ({ ...path, name: path.name.replace(/\\/g, "/") })
+
 export const fileWatcherSlice = createSlice({
   name: "file-watcher",
   initialState: {
@@ -19,7 +21,7 @@ export const fileWatcherSlice = createSlice({
   },
   reducers: {
     setInputPaths: (state: FileWatcherState, action: PayloadAction<Path[]>) => {
-      state.inputPaths = action.payload
+      state.inputPaths = action.payload.map(applyWindowsSupport)
     },
   },
   extraReducers: {
@@ -33,7 +35,6 @@ export const fileWatcherSlice = createSlice({
         state.watchedPaths = state.watchedPaths.filter(path => path.name !== fileWatchEvent.path.name)
       }
 
-      const applyWindowsSupport = (path: PathDetailed) => ({ ...path, name: path.name.replace(/\\/g, "/") })
 
       state.watchedPaths = orderBy(state.watchedPaths.map(applyWindowsSupport), path => path.name)
     }),

@@ -72,7 +72,7 @@ library you want
 - node_modules and hidden files won't be displayed in the file explorer
 - I decided not to use the [File System Access API](https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API) as it is not supported by all major browsers + doesn't provide full file path for security reasons
 - I'm using websockets to enable real time streaming of file events
-- Only tested on a linux machine, should work fine with other OS too
+- Only tested on linux and windows, mac should work fine as well
 - There are few extra files that were not required by this project, the relevant paths are `apps/webapp` and `apps/api`
 - I'm using 2 different design system library (I prefer `mui`) and started with that, but the tree view wasn't performant enough so I ended up integrating `ant` only for the tree view
 - Files with over 20,000 characters won't be displayed because highlightJS has not merged its [performance PR](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/82806) yet
