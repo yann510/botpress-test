@@ -14,7 +14,7 @@ interface Props {
 }
 
 const getObjectPath = (path: string) => {
-  const objectPath = trimEnd(path.name, "/").replace(/\//g, ".")
+  const objectPath = trimEnd(path, "/").replace(/\//g, ".")
 
   return objectPath[0] === "." ? `/.${objectPath.slice(1, objectPath.length)}` : objectPath
 }
